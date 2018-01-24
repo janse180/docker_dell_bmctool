@@ -2,12 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: quay.io/bwvisu/docker-dev:v17.06.0-debian9.1-1
     steps:
       - checkout
-      - run:
-          name: Greeting
-          command: echo Hello, world.
-      - run:
-          name: Print the Current Time
-          command: date
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          TAG=0.1.$CIRCLE_BUILD_NUM
+          docker build -t janse180/bmctool:$TAG .
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push janse180/bmctool:$TAG
