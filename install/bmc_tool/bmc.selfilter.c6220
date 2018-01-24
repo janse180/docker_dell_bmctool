@@ -1,0 +1,88 @@
+#
+# SEL Filter file -- this is read by the "bmc" tool
+#
+# The format is:
+#
+# severity , rule
+# 
+#   severity can be:  ignore, info, warn, or crit
+#   rule is a text string to match inside a SEL line (from "ipmitool sel list")
+#
+#   rules can contain a logical AND delimeter to require multiple parts to match:  {{&&}}
+#
+# NOTE:  SEL entries not covered by a rule is assumed to be critical, and will get severity
+# 'crit' (lower case) to indicate this.  
+#
+# sev     meaning
+# 
+# CRIT    Matched rule; critical severity
+# WARN    Matched rule; warning severity
+# INFO    Matched rule; info severity
+# XXXX    Matched rule; 'ignore' severity
+# crit    Did not match any rule; treated as critical; written differently to alert the user
+#         so that rules can be amended
+#
+
+
+###
+### These are not real errors
+###
+
+ignore , System Event #0x81 | OEM System boot event | Asserted
+ignore , System Event #0x85 | OEM System boot event | Asserted
+ignore , Unknown #0x17 |
+ignore , Management Subsystem Health #0xb5 | Controller access degraded or unavailable | Asserted
+ignore , Management Subsystem Health #0xb5 | Controller access degraded or unavailable | Deasserted
+ignore , Power Supply {{&&}} | Presence detected | Asserted
+ignore , Drive Slot {{&&}} | Drive Present | Asserted
+ignore , OS Boot {{&&}} boot completed | Asserted
+ignore , Unknown #0x18 
+
+
+###
+### These are mostly informational.
+###
+
+info , System ACPI Power State {{&&}} | S5/G2: soft-off | Asserted
+info , System ACPI Power State {{&&}} | S0/G0: working | Asserted
+info , Event Logging Disabled {{&&}} | Log area reset/cleared | Asserted
+info , Power Supply {{&&}} | Power Supply AC lost | Deasserted
+info , Power Supply {{&&}} | Failure detected | Deasserted
+info , Power Supply {{&&}} | Non-Redundant: Sufficient from Redundant
+info , Power Supply {{&&}} | Fully Redundant
+info , Power Supply {{&&}} | Config Error {{&&}} | Deasserted
+# Intel CPU ME message:  PROCHOT asserted or power throttling signal received (throttling
+# can be disabled)
+info , Processor #0x1c |
+info , Processor #0x1d |
+
+###
+### Critical
+###
+
+crit , Power Unit {{&&}} | AC lost | Asserted
+crit , Power Supply {{&&}} | Non-Redundant: Insufficient Resources
+crit , Power Supply {{&&}} | Failure detected | Asserted
+crit , Power Supply {{&&}} | Power Supply AC lost | Asserted
+crit , Power Supply {{&&}} | Redundancy Degraded
+crit , Power Supply {{&&}} | Presence detected | Deasserted
+crit , Event Logging Disabled {{&&}} | Log almost full | Asserted
+crit , Event Logging Disabled {{&&}} | Log full | Asserted
+crit , Power Supply {{&&}} | Config Error
+
+crit , OS Stop/Shutdown {{&&}} Run-time critical stop | Asserted
+crit , Linux kernel panic
+crit , System Firmware Error
+
+crit , Drive Slot {{&&}} | Drive Present | Deasserted
+crit , | Memory {{&&}} | Correctable ECC | Asserted
+crit , | Memory {{&&}} | Uncorrectable ECC | Asserted
+crit , | Fan {{&&}} | Lower Non-critical going low
+crit , | Fan {{&&}} | Lower Critical going low
+crit , | Temperature {{&&}} | Upper {{&&}} going high
+crit , | Voltage {{&&}} | Upper {{&&}} going high
+crit , | Voltage {{&&}} | Lower {{&&}} going low
+crit , Platform Alert #0x01 | Upper Non-recoverable going high
+
+
+

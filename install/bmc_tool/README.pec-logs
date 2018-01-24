@@ -1,0 +1,228 @@
+=============================Quick Usage info==============================
+
+Script Usage:
+Download script package
+Extract script files
+	tar -xf pec-logs-2014-09-23.tgz
+Run script
+        ./pec-logs.sh
+
+For additional information, review README or script help information
+        less README.pec-logs
+        ./pec-logs.sh -h
+
+==================================README===================================
+
+PE-C Support Logs Script				Release: 2014-09-23
+
+PE-C Support Script(pec-logs) is a utility that collects configuration and 
+log data from the target server for various chassis hardware, storage and 
+Operating System components on Dell PE-C servers. pec-logs uses IPMI and 
+MegaCli as well as Dell utilities bmc tool, setupbios and ldstate from  
+poweredgec.dell.com to gather information from hardware. It uses OS specific 
+built-in report tools and/or individual OS commands to pull Operating System 
+logs and configuration.
+
+---------------------------------------------------------------------------
+
+=================================Contents==================================
+
+   -- Features
+   -- Supported Server Platforms
+   -- Supported Operating Systems
+   -- Software Requirements
+   -- Personally Identifiable Information (PII)
+   -- Running pec-logs
+   -- Known Issues
+
+---------------------------------------------------------------------------
+   
+=================================Features==================================
+
+* pec-logs runs as a self-extracting bash script file, and will clean up 
+  extracted files on exit
+* Verifies that the installed operating system and server platform are 
+  supported by script
+* Verifies that the required OS components, OpenIPMI and OpenIPMI-tools (or 
+  ipmitool) are installed
+	- These components are required for the base script functionality 
+          and the script will abort if they are not installed with messaging
+          to install the missing packages.)
+* Verifies that the optional package, MegaCli, is installed MegaCli will only
+  be verified as installed upon detection of a supported RAID controller. If
+  a supported RAID controller is present but MegaCli is not installed, the 
+  script will prompt on whether to continue or abort. Additionally, the 
+  script will verify MegaCli version 8.04.07 or later is installed for 
+  compatibility.
+* Starts the required IPMI service
+* Menu prompts to pull a complete or custom report and to clear SEL
+	- Custom report allows user to skip gathering unnecessary / unwanted
+          logs)
+* Pulls the system information using IPMI, bmc tool and setupbios
+* Pulls dmidecode and lspci (lspci, lspci -v and lspci -vvv are used)
+* If MegaCli is installed, it pulls controller configuration and TTY log
+* Pulls additional storage information using ldstate
+* Pulls OS specific logs and configuration
+ 	- For Red Hat or similar distributions, a sosreport is gathered
+	- For SUSE, a supportconfig is gathered
+	- For Debian or similiar distributions, several individual commands 
+          to pull information similar to sosreport are used
+* Compresses all gathered log files and outputs to /tmp. 
+  	- Filename is automatically generated as 
+          pec-logs_<servicetag>_<hostname>_<date>.tgz
+	- Resulting filename w/path is output to screen for customer to view
+* All system information and logs are written to individual files based on 
+  the information being pulled, allowing for information to be easily 
+  reviewed
+* Any unexpected errors during process are redirected to /tmp/.pec-logs_errors
+	- If .pec-logs_errors exists it is included in pec-logs report
+* Command line switch arguments provided to modify file name and output 
+  directory, see usage parameters for additional details and options.
+* Command line switch to reset a hung BMC, does not reset configuration. 
+  The BMC may take several minutes to resume normal operation.
+* Command line switch to read the BMC rom to file for user to provide to Dell
+  if BMC firmware issues are suspected
+* Mellanox sysinfo-snapshot script included to pull Mellanox support information
+
+---------------------------------------------------------------------------
+
+========================Supported Server Platforms=========================
+
+pec-logs supports the following systems:
+
+* PowerEdge-C Systems: C1100, C2100, C5125, C5220, C5230
+  C6100, C6145, C6105, C6220, C6220 II, C8220, C8220X
+
+If supported system is not detected properly, set server platform variable 
+  # export PECLOGS_PLATFORM=NNNNN
+  
+Setting incorrect server platform may affect information gathered by script
+---------------------------------------------------------------------------
+
+========================Supported Operating Systems========================
+
+The following operating systems have been tested:
+
+* Red Hat Enterprise Linux 5/6 (32-bit and 64-bit)
+* CentOS 5/6 (32-bit and 64-bit)
+* SUSE Linux Enterprise Server 11
+* Ubuntu 12.04
+
+---------------------------------------------------------------------------
+
+===========================Software Requirements===========================
+
+ Requirements: -- Bash shell
+               -- ipmitool
+               -- dmidecode
+               -- lspci
+     Optional: -- MegaCli (version 8.04.07 or newer recommended)
+               -- smartmontools (version 5.42 or newer recomended)
+
+MegaCli version 8.04.07 is recommended, available at: 
+http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.04.07_MegaCLI.zip
+
+Required packages listed above provide base functionality for the script
+There are several additional standard Linux packages used to pull information
+from the server, however they are not required for the script to complete
+
+Optional packages listed above are necessary to pull storage related logs
+If they are not present, at the recommended versions, some of or all 
+storage logs may not be available
+If not troubleshooting a storage related issue, warnings can be ignored
+
+pec-logs uses the following Dell utilities which are available at: 
+http://www.poweredgec.dell.com
+* bmc-tool
+* setupbios
+* ldstate
+For convenience, these utilities are bundled with pec-logs.
+
+---------------------------------------------------------------------------
+
+=================Personally Identifiable Information (PII)=================
+
+The Personally Identifiable Information collected is:
+    - Host Name
+    - IP Address
+    - Subnet Mask
+    - Default Gateway
+    - MAC Address
+    - DHCP Server
+    - DNS Server
+    - Processes
+    - System Logs
+
+---------------------------------------------------------------------------
+
+=============================Running pec-logs==============================
+
+pec-logs must be run as root or with sudo
+Run pec-logs at console, gui terminal or ssh session
+
+1. Ensure execute permissions are assigned to file
+   chmod +x pec-logs.sh
+2. Run the file
+   ./pec-logs.sh
+   
+If all required components are installed, (OpenIPMI, OpenIPMI-tools (or 
+ipmitool) and MegaCli), the script will proceed to a user prompt to either 
+pull a complete or custom report. If a Custom Report is chosen, select the 
+desired subsystems to pull information from.
+Find the output file at /tmp/pec-logs_<servicetag>_<hostname>_<date>.tgz and 
+send this file to Dell for analysis.
+
+If OpenIPMI and OpenIPMI-tools (or ipmitool) are not found, the script will 
+abort and advise which components need to be installed.
+If MegaCli is not found, the script will prompt to continue.  If storage 
+information is necessary, responding N will abort the script. Additionally, 
+if MegaCli is found to be a lesser version than 8.04.07 a similar prompt 
+will be presented.
+
+pec-logs will clean up all extracted files and temporary logs directory when 
+complete, or if the script exits before completion.
+Any script errors can be viewed in file /tmp/.pec-logs_errors
+
+PE-C Support Script - Usage
+This script must be run with sudo or as root user
+
+Usage: pec-logs.sh [option] <value>
+Valid command line options are:
+-h              Show usage information
+-f <value>      Modify report filename
+                Default: pec-logs_<servicetag>_<hostname>_<date>.tgz
+                Modified: pec-logs_<value>_<servicetag>_<hostname>_<date>.tgz
+-d <value>      Change report output directory (default: /tmp/)
+-q              Quiet mode, most output and prompts suppressed
+                Quiet mode pulls all system hardware, storage and OS logs
+-c              Clears system event logs(SEL)
+                Assumes OpenIPMI and ipmitool are installed
+--mellanox	If Mellanox Infiniband adapters installed, pulls Mellanox
+		support information using sysinfo-snapshot
+--bmc-reset     Resets a hung BMC, does not reset configuration
+                May take several minutes for BMC to resume operation
+--read-bmc-rom  Reads BMC ROM to file, saved as compressed file
+
+Usage Examples:
+Normal operation                        pec-logs.sh
+Modify report filename                  pec-logs.sh -f example
+Modify report destination               pec-logs.sh -d /root
+Modify report filename and destination  pec-logs.sh -f example -d /root
+
+---------------------------------------------------------------------------
+
+===============================Known Issues================================
+
+* Releases prior to 2013-06-14 may report Supported Operating System Not
+  Found on RHEL 6.4 and in some other circumstances when run on a supported
+  distribution
+* Currently, scripted smartctl cannot pull SMART data from hard drives connected to
+  LSI MegaRAID controllers such as LSI9260
+
+To report an issue, please email the PowerEdge-C mailing list 
+poweredgec-tools@dell.com
+Please include the output from /tmp/.pec-logs_errors in your email and the
+steps to reproduce
+
+---------------------------------------------------------------------------
+

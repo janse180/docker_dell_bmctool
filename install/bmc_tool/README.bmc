@@ -1,0 +1,69 @@
+
+"bmc" is a standalone app, but requires ipmitool to work.  Tested on Perl 5.10; should work on 5.8.  
+It uses ipmitool.  Tested extensively with v1.8.11.  Do NOT apply "Dell" patches that you may find
+on the internet--use stock 1.8.11 ipmitool.
+
+You can get ipmitool from:  http://ipmitool.sourceforge.net/
+
+	Building ipmitool is easy:
+
+		./configure
+		make
+		make install
+
+"bmc" can operate on the local KCS channel (direct access via the OpenIPMI driver to the BMC local
+to the system).  IPMI is implicitly authenticated when used this way, so this is how you change
+lost passwords.  "bmc" can also be used to talk to one/many remote BMCs--this is how it is more
+typically used, and tested.
+
+
+INSTALLATION
+
+    Just copy the files:
+
+        mkdir -p /opt/dell/pec
+        cp * /opt/dell/pec
+
+
+FAQ
+
+Q:  "bmc info" and "bmc allinfo" report the BIOS version as "reboot".
+
+A:  "reboot" means that the BMC has been reset while the server was up.  It is necessary
+	to reboot the server for the BMC to be aware of the BIOS version.  Please reboot
+    the server and retry.
+
+
+
+Q:  What is SEL filtering?  How do I use it?
+
+A:  The "selfilter", "selfilter_from_file", and "pecagent_sel" commands all implement filtering
+    of SEL entries based on rules.  The tool looks in the current directory and the default home
+    ( /opt/dell/pec ) for the rules file by-platform.  For example, for C6220, the file is:
+
+        /opt/dell/pec/bmc.selfilter.c6220
+
+    See the file itself for grammar.  The gist of it is that you create rules to categorize the
+    various SEL entries; by default everything is assumed to be critical.  
+
+    By using these rules you can reduce the severity of the various SEL errors, so your monitoring
+    does not alert on them.
+
+    You can use this as follows: 
+
+        # Show all SEL messages with their respective severities
+        bmc selfilter all
+
+        # Show only "INFO" level and above:
+        bmc selfilter info
+
+        # Show only "CRIT" level (most common for monitoring):
+        bmc selfilter crit
+
+    Note that there is also a variant of this command used for pecagent.  To show the last 5 SEL
+    entries, filtering out anything not warning level or above, do this:
+
+        bmc pecagent_sel 5 warn
+
+
+

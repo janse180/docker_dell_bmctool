@@ -1,0 +1,58 @@
+
+10/15/2014 : Pull in new version of pec-logs, for RHEL7 compatibility.
+09/26/2014 : Changed default behavior to NOT cache IPMI reservations.
+09/12/2014 : Improved IPMIDEBUG output from tool.
+06/27/2014 : Newer version of pec-logs.  Fixed bug with hard_reset. 
+04/13/2014 : Removed RPM requirements--too many cases when not really needed.
+11/23/2013 : Fix cosmetics around PSU detection and power policy.
+10/22/2013 : Fix corner case that prevents hard_reset from working (rarely)
+10/11/2013 : Added pec-logs directly into this package; added "hard_reset" to force a BMC to reboot.
+10/10/2013 : Add chassis emergency throttling policy to allinfo & scripting.
+09/17/2013 : Add a number of things for C6220/C8220:  PSU required/redundant scripting commands, error state, and info to allinfo.
+09/16/2013 : Fixed help menus, pushed more stuff onto main, and generally organized menus better.
+09/12/2013 : Add bmc_ip_source, bmc_vlan, host and bmc ip address scripting commands.  Fix C6220 PPID detection.
+07/19/2013 : Add synonyms blink, fastblink, and raw (quick access to id_led and ipmitool passthrough).
+07/11/2013 : BMC lists can now contain BMC lists.  So you can define a list for a rack, that refers to chassis, that refers to actual node IP addresses.
+07/10/2013 : Add a number of scripting convenience commands:  host_ip_addr_1, host_mac_addr_1, bmc_ip_addr, etc
+03/22/2013 : Add total_power to allow you to easily survey aggregate (chassis, rack, row, etc) power draw.
+02/08/2013 : Fixed force_fan_speed for C6220 and C8000 chassis.
+02/05/2013 : Add avg_fan_speed probing
+01/15/2013 : Improved behavior of BMC tool with C8000 chassis that has its FCB (fan control board) removed.
+01/08/2013 : Add power capping help menu, Intel ME power toggle and sensing.
+12/10/2012 : Misc bugfix & additions.
+12/05/2012 : Add set_chassis_power_cap (again for C6220/C8220).
+12/04/2012 : Add ability to read chassis power limiting info for C6220/C8220.  (located in 'pcap' and 'allinfo')
+11/12/2012 : Add FRU data to allinfo.
+10/17/2012 : Add selfilter and selfilter_from_file; assigns severity to SEL log entries to aid in monitoring. See the README for details.
+09/12/2012 : Added commands to fetch and set the BMC MAC addresses to aid provisioning/setup.
+08/31/2012 : Added SEL log state to "bmc pecagent_health".
+08/31/2012 : Added a "SEL" passthrough for convenience ("bmc sel list", "bmc sel info", "bmc sel list last 4", etc).
+08/30/2012 : Fix bugs in IPMI sensor handling for health detection for PE-R servers and C6100.
+08/18/2012 : Fix bug in BMC security options setting code.
+08/13/2012 : Add health summary tool for the PEC Agent.
+07/30/2012 : Add ability to read chassis service tag (for C6000/C8000) in 'bmc allinfo'.
+07/26/2012 : Add "nic_mode toggle" option (aids scripting and initial provisioning).  
+07/20/2012 : Added ability to store/read/clear arbitrary state variable info in the BMC via 'state' command.
+07/19/2012 : Added platform override capability.
+05/24/2012 : Enhanced platform detection.
+05/09/2012 : Add chassis type detection.
+05/08/2012 : Add chassis power draw, required/redundant PSU detection to C6220.
+05/07/2012 : Broadened support to DCS platforms.
+04/27/2012 : C410X: General bugfix; more robust detection of power states.
+04/25/2012 : C5000: Cleanup around the fine-grained security settings.  Improved power sensing algorithm.
+04/12/2012 : C410X: Add support.  Add the gpgpu and gpgpu_power commands.
+03/20/2012 : C6145: support BMC security features.
+03/18/2012 : Added full support for C6220
+03/06/2012 : Added chassis power draw reading for C5000 (Microserver)
+02/29/2012 : Made startup BMC detection more robust; can now detect & advise fixes for several new conditions.
+02/26/2012 : Added fast BMC ping, and generic ipmitool passthrough.
+02/26/2012 : Added multiple-bmc support.  Specify by multiple -H flags or reference a BMC list by -H^filename
+02/25/2012 : Added more debug to help determine all prereqs are present; explicitly show what failed if it fails.
+02/24/2012 : Clean up the tool and add Environment variables.
+02/21/2012 : Added ability to detect C1100/C2100 BIOS version
+02/14/2012 : Completely/correctly fixed bug around using tool in KCS mode.  Separated KCS from IOL detection.
+02/12/2012 : Added ability to change asset tag (C6100 / C6145).
+01/29/2012 : Significantly sped up the read process (~2.5x).  Fixed quirk when FRU data is incomplete.
+01/15/2012 : Added ability to read chassis/node power draw for most platforms.
+01/11/2012 : Added debugability and hardened ipmitool calls.  One erroneous probe should not halt longer operations any more.
+12/01/2011 : Major update.  Add "info" and "allinfo" commands to make remote browsing of systems easy.
